@@ -1,26 +1,29 @@
-// users-model.ts - A mongoose model
+// messages-model.ts - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
 // for more of what you can do here.
 import { Application } from '../declarations';
-import { Model, Mongoose, Schema } from 'mongoose';
+import { Model, Mongoose } from 'mongoose';
 
 export default function (app: Application): Model<any> {
-  const modelName = 'users';
+  const modelName = 'messages';
   const mongooseClient: Mongoose = app.get('mongooseClient');
-  const schema = new mongooseClient.Schema(
+  const { Schema } = mongooseClient;
+  const schema = new Schema(
     {
-      email: { type: String, unique: true, lowercase: true },
-      password: { type: String, required: true },
-      role: { type: String, enum: ['admin', 'operator', 'client'] },
-      name: {
-        firstName: { type: String },
-        lastName: { type: String },
-      },
-      isOnline: { type: Boolean, default: false },
-      avatarId: {
+      text: { type: String, required: true },
+      type: { type: String, enum: ['text', 'photo', 'call'] },
+      isRead: { type: Boolean, required: false },
+      authorRole: { type: String, enum: ['operator', 'client'] },
+      photosIds: { type: [Schema.Types.ObjectId], ref: 'uploads' },
+      chatId: {
         type: Schema.Types.ObjectId,
-        ref: 'uploads',
+        ref: 'chats',
+        required: true,
+      },
+      userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
       },
     },
     {
