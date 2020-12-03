@@ -1,6 +1,5 @@
 // Initializes the `uploads` service on path `/uploads`
 import { ServiceAddons } from '@feathersjs/feathers';
-import createService from 'feathers-mongoose';
 import path from 'path';
 import multer from 'multer';
 import { Application } from '../../declarations';
@@ -32,6 +31,7 @@ export default function (app: Application): void {
   const options = {
     Model: createModel(app),
     paginate: app.get('paginate'),
+    multi: true,
   };
 
   // Initialize our service with any options it requires
@@ -42,10 +42,11 @@ export default function (app: Application): void {
     function (req, res, next) {
       if (req.feathers) {
         req.feathers.files = req.files;
+        next();
       }
-      next();
     },
-    createService(options)
+    new Uploads(options, app)
+    // createService(options)
   );
 
   // Get our initialized service so that we can register hooks

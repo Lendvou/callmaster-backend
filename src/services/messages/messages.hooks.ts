@@ -1,6 +1,8 @@
 import * as authentication from '@feathersjs/authentication';
 import { HookContext } from '@feathersjs/feathers';
-import { fastJoin } from 'feathers-hooks-common';
+import { discardQuery, fastJoin, iff } from 'feathers-hooks-common';
+
+import readMessages from '../../hooks/read-messages';
 // Don't remove this comment. It's needed to format import lines nicely.
 
 const { authenticate } = authentication.hooks;
@@ -30,7 +32,13 @@ const query = {
 export default {
   before: {
     all: [authenticate('jwt')],
-    find: [],
+    find: [
+      iff(
+        (context) => context.params.query && context.params.query.$read,
+        readMessages(),
+        discardQuery('$read')
+      ),
+    ],
     get: [],
     create: [],
     update: [],
@@ -42,7 +50,14 @@ export default {
     all: [fastJoin(messagesResolver, query)],
     find: [],
     get: [],
-    create: [],
+    create: [
+      async (context: HookContext): Promise<HookContext> => {
+        await context.app.service('chats').patch(context.result.chatId, {
+          lastMessageDate: context.result.createdAt,
+        });
+        return context;
+      },
+    ],
     update: [],
     patch: [],
     remove: [],

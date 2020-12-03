@@ -11,10 +11,10 @@ export default function (app: Application): Model<any> {
   const { Schema } = mongooseClient;
   const schema = new Schema(
     {
-      text: { type: String, required: true },
-      type: { type: String, enum: ['text', 'photo', 'call'] },
-      isRead: { type: Boolean, required: false },
-      authorRole: { type: String, enum: ['operator', 'client'] },
+      text: { type: String },
+      type: { type: String, enum: ['text', 'photo', 'call'], required: true },
+      isRead: { type: Boolean, default: false },
+      authorRole: { type: String, enum: ['admin', 'operator', 'client'] },
       photosIds: { type: [Schema.Types.ObjectId], ref: 'uploads' },
       chatId: {
         type: Schema.Types.ObjectId,

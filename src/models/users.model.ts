@@ -10,14 +10,17 @@ export default function (app: Application): Model<any> {
   const mongooseClient: Mongoose = app.get('mongooseClient');
   const schema = new mongooseClient.Schema(
     {
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
       email: { type: String, unique: true, lowercase: true },
       password: { type: String, required: true },
-      role: { type: String, enum: ['admin', 'operator', 'client'] },
-      name: {
-        firstName: { type: String },
-        lastName: { type: String },
+      role: {
+        type: String,
+        enum: ['admin', 'operator', 'client'],
+        required: true,
       },
       isOnline: { type: Boolean, default: false },
+      isBusy: { type: Boolean, default: false },
       avatarId: {
         type: Schema.Types.ObjectId,
         ref: 'uploads',

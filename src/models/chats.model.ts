@@ -25,6 +25,9 @@ export default function (app: Application): Model<any> {
         ref: 'messages',
         required: false,
       },
+      lastMessageDate: {
+        type: Date,
+      },
     },
     {
       timestamps: true,

@@ -19,9 +19,6 @@ export default function (app: Application): void {
     if (connection) {
       // Obtain the logged in user from the connection
       // const user = connection.user;
-      console.log('CONNECTION', connection);
-
-      const user = connection.user;
 
       // The connection is no longer anonymous, remove it
       app.channel('anonymous').leave(connection);
@@ -29,23 +26,34 @@ export default function (app: Application): void {
       // Add it to the authenticated user channel
       app.channel('authenticated').join(connection);
 
+      const user = connection.user;
+
       if (user?.role === 'admin') {
         app.channel('admins').join(connection);
       }
 
       if (user) {
+        app.service('users').patch(user._id, { isOnline: true });
+
         const idType = user.role === 'client' ? 'clientId' : 'operatorId';
 
         const chats = (await app.service('chats').find({
-          query: { [idType]: user._id, $select: ['_id'] },
+          query: { [idType]: user._id },
           paginate: false,
         })) as any[];
+        // console.log('passed the chats', user.role, chats);
+
         const chatIds = chats.map((item: any) => item._id);
 
         chatIds.forEach((chatId) => {
           app.channel(`chats_${chatId}`).join(connection);
         });
+        app.channel(`users_${user._id}`).join(connection);
+        // if (user.role !== 'client') {
+        //   app.channel(`operators_${user._id}`).join(connection);
+        // }
       }
+      console.log('ALL CHANNELS', app.channels);
 
       // if (user?.role === 'client') {
       //   const chats = (await app.service('chats').find({
@@ -85,6 +93,19 @@ export default function (app: Application): void {
     }
   });
 
+  app.on('logout', (payload: any) => {
+    if (payload?.user) {
+      const user = payload.user;
+      app.service('users').patch(user._id, { isOnline: false });
+    }
+  });
+
+  app.on('disconnect', (payload: any) => {
+    if (payload.user) {
+      app.service('users').patch(payload.user._id, { isOnline: false });
+    }
+  });
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.publish((data: any, hook: HookContext) => {
     // Here you can add event publishers to channels set up in `channels.ts`
@@ -112,10 +133,26 @@ export default function (app: Application): void {
 
   app
     .service('messages')
-    .publish((message: any) => [
-      app.channel(`chats_${message.chatId}`),
-      app.channel('admins'),
-    ]);
+    .publish(async (message: any, context: HookContext) => {
+      const { app } = context;
 
-  console.log('ALL CHANNELS', app.channels);
+      const currentChat = await app.service('chats').get(message.chatId);
+
+      return [
+        // app.channel(`chats_${message.chatId}`),
+        // app.channel(`users_${message.userId}`),
+        app.channel(`users_${currentChat.operatorId}`),
+        app.channel(`users_${currentChat.clientId}`),
+        app.channel('admins'),
+      ];
+    });
+  app.service('chats').publish(async (chat: any) => [
+    // app.channel(`chats_${chat._id}`),
+    // app.channel(`operators_${chat.operatorId}`),
+    app.channel(`users_${chat.operatorId}`),
+    app.channel(`users_${chat.clientId}`),
+    app.channel('admins'),
+  ]);
+
+  // console.log('ALL CHANNELS', app.channels);
 }

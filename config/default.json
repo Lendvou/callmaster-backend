@@ -7,6 +7,10 @@
     "default": 10,
     "max": 50
   },
+  "cors": {
+    "origin": ["http://localhost:3000"],
+    "credentials": true
+  },
   "authentication": {
     "entity": "user",
     "service": "users",
@@ -19,7 +23,7 @@
       "audience": "https://yourdomain.com",
       "issuer": "feathers",
       "algorithm": "HS256",
-      "expiresIn": "1d"
+      "expiresIn": "31d"
     },
     "local": {
       "usernameField": "email",

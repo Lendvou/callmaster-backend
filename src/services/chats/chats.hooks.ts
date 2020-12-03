@@ -18,11 +18,52 @@ const chatResolver = {
           paginate: false,
         })
       )[0]),
+    operator: ($select: string[]) => async (
+      chat: any,
+      { app }: HookContext
+    ) => {
+      const operator = await app.service('users').get(chat.operatorId, {
+        query: { $select },
+      });
+      chat.operator = operator;
+    },
+    client: ($select: string[]) => async (chat: any, { app }: HookContext) => {
+      const client = await app.service('users').get(chat.clientId, {
+        query: { $select },
+      });
+      chat.client = client;
+    },
+
+    clientUnreadMessages: () => async (chat: any, { app }: HookContext) => {
+      const { total } = await app.service('messages').find({
+        query: {
+          isRead: false,
+          chatId: chat._id,
+          authorRole: 'operator',
+        },
+      });
+      chat.clientUnreadMessages = total;
+    },
+    operatorUnreadMessages: () => async (chat: any, { app }: HookContext) => {
+      const { total } = await app.service('messages').find({
+        query: {
+          isRead: false,
+          chatId: chat._id,
+          authorRole: 'client',
+        },
+      });
+      chat.operatorUnreadMessages = total;
+    },
   },
 };
 
 const chatQuery = {
   lastMessage: true,
+  // user: true,
+  operator: [['firstName', 'lastName', 'avatar', 'isOnline', 'role']],
+  client: [['firstName', 'lastName', 'avatar', 'isOnline', 'role']],
+  clientUnreadMessages: true,
+  operatorUnreadMessages: true,
 };
 
 export default {
@@ -30,7 +71,20 @@ export default {
     all: [authenticate('jwt')],
     find: [],
     get: [],
-    create: [],
+    create: [
+      async ({ service, data }: HookContext): Promise<void> => {
+        const { total } = await service.find({
+          query: {
+            clientId: data.clientId,
+            operatorId: data.operatorId,
+          },
+        });
+
+        if (total > 0) {
+          throw Error('Instance already exists');
+        }
+      },
+    ],
     update: [],
     patch: [],
     remove: [],
