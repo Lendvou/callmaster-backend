@@ -60,6 +60,7 @@
     "mongodb-core": "^3.2.7",
     "mongoose": "^5.10.7",
     "multer": "^1.4.2",
+    "peer": "^0.6.1",
     "serve-favicon": "^2.5.0",
     "winston": "^3.0.0"
   },
