@@ -1,11 +1,12 @@
 import logger from './logger';
 import app from './app';
-import { PeerServer } from 'peer';
+import { ExpressPeerServer } from 'peer';
 
 const port = app.get('port');
 const server = app.listen(port);
 
-PeerServer({ port: 4000, path: '/' });
+const peerServer = ExpressPeerServer(server, { path: '/' });
+app.use('/peerjs', peerServer);
 
 process.on('unhandledRejection', (reason, p) =>
   logger.error('Unhandled Rejection at: Promise ', p, reason)
