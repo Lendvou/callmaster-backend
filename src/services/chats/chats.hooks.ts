@@ -18,19 +18,12 @@ const chatResolver = {
           paginate: false,
         })
       )[0]),
-    operator: ($select: string[]) => async (
-      chat: any,
-      { app }: HookContext
-    ) => {
-      const operator = await app.service('users').get(chat.operatorId, {
-        query: { $select },
-      });
+    operator: () => async (chat: any, { app }: HookContext) => {
+      const operator = await app.service('users').get(chat.operatorId);
       chat.operator = operator;
     },
-    client: ($select: string[]) => async (chat: any, { app }: HookContext) => {
-      const client = await app.service('users').get(chat.clientId, {
-        query: { $select },
-      });
+    client: () => async (chat: any, { app }: HookContext) => {
+      const client = await app.service('users').get(chat.clientId);
       chat.client = client;
     },
 
@@ -60,8 +53,8 @@ const chatResolver = {
 const chatQuery = {
   lastMessage: true,
   // user: true,
-  operator: [['firstName', 'lastName', 'avatar', 'isOnline', 'role']],
-  client: [['firstName', 'lastName', 'avatar', 'isOnline', 'role']],
+  operator: true,
+  client: true,
   clientUnreadMessages: true,
   operatorUnreadMessages: true,
 };
