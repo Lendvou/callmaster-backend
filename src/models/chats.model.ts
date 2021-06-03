@@ -20,11 +20,6 @@ export default function (app: Application): Model<any> {
         type: Schema.Types.ObjectId,
         ref: 'users',
       },
-      lastMessageId: {
-        type: Schema.Types.ObjectId,
-        ref: 'messages',
-        required: false,
-      },
       lastMessageDate: {
         type: Date,
       },
