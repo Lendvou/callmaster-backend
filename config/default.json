@@ -8,14 +8,14 @@
     "max": 50
   },
   "cors": {
-    "origin": ["http://localhost:3000"],
+    "origin": ["http://localhost:3000", "http://localhost:3001"],
     "credentials": true
   },
   "authentication": {
     "entity": "user",
     "service": "users",
     "secret": "IqPi10C0XxG3Y3WQBOrE5z/BF2g=",
-    "authStrategies": ["jwt", "local"],
+    "authStrategies": ["jwt", "local", "secret"],
     "jwtOptions": {
       "header": {
         "typ": "access"

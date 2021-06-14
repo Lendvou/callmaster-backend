@@ -9,10 +9,13 @@ const { hashPassword, protect } = local.hooks;
 
 const usersResolver = {
   joins: {
-    avatar: () => async (user: any, { app }: HookContext) =>
-      (user.avatar = user.avatarId
-        ? await app.service('uploads').get(user.avatarId)
-        : undefined),
+    avatar:
+      () =>
+      async (user: any, { app }: HookContext) => {
+        return (user.avatar = user.avatarId
+          ? await app.service('uploads').get(user.avatarId)
+          : undefined);
+      },
   },
 };
 
@@ -25,7 +28,7 @@ export default {
     all: [],
     find: [authenticate('jwt')],
     get: [authenticate('jwt')],
-    create: [hashPassword('password')],
+    create: [hashPassword('password'), assignNum()],
     // create: [ hashPassword('password') ],
     update: [hashPassword('password'), authenticate('jwt')],
     patch: [hashPassword('password'), authenticate('jwt')],
@@ -34,10 +37,10 @@ export default {
 
   after: {
     all: [
+      fastJoin(usersResolver, query),
       // Make sure the password field is never sent to the client
       // Always must be the last hook
       protect('password'),
-      fastJoin(usersResolver, query),
     ],
     find: [],
     get: [],
@@ -57,3 +60,15 @@ export default {
     remove: [],
   },
 };
+
+function assignNum() {
+  return async (context: HookContext) => {
+    const res = await context.service.find({ query: { $limit: 1 } });
+
+    if (context.data) {
+      context.data.num = res.total + 1;
+    }
+
+    return context;
+  };
+}
