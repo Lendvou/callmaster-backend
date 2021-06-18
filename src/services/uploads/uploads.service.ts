@@ -19,10 +19,7 @@ const storage = multer.diskStorage({
     cb(null, './public/uploads/');
   },
   filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + '-' + Date.now() + path.extname(file.originalname)
-    );
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
 const multipartMiddleware = multer({ storage });
@@ -39,7 +36,7 @@ export default function (app: Application): void {
   app.use(
     '/uploads',
     multipartMiddleware.array('file', 3),
-    function (req, res, next) {
+    function (req: any, res: any, next: any) {
       if (req.feathers) {
         req.feathers.files = req.files;
         next();
