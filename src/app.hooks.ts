@@ -25,14 +25,7 @@ export default {
   },
 
   error: {
-    all: [
-      (ctx: HookContext): HookContext => {
-        if (ctx.error) {
-          console.log('HOOK ERROR', (ctx as any).code, ctx.error);
-        }
-        return ctx;
-      },
-    ],
+    all: [],
     find: [],
     get: [],
     create: [],
