@@ -53,7 +53,7 @@ export default function (app: Application): void {
         //   app.channel(`operators_${user._id}`).join(connection);
         // }
       }
-      console.log('ALL CHANNELS', app.channels);
+      console.log('ALL CHANNELS 1', app.channels);
 
       // if (user?.role === 'client') {
       //   const chats = (await app.service('chats').find({
@@ -131,21 +131,19 @@ export default function (app: Application): void {
   //   ];
   // });
 
-  app
-    .service('messages')
-    .publish(async (message: any, context: HookContext) => {
-      const { app } = context;
+  app.service('messages').publish(async (message: any, context: HookContext) => {
+    const { app } = context;
 
-      const currentChat = await app.service('chats').get(message.chatId);
+    const currentChat = await app.service('chats').get(message.chatId);
 
-      return [
-        // app.channel(`chats_${message.chatId}`),
-        // app.channel(`users_${message.userId}`),
-        app.channel(`users_${currentChat.operatorId}`),
-        app.channel(`users_${currentChat.clientId}`),
-        app.channel('admins'),
-      ];
-    });
+    return [
+      // app.channel(`chats_${message.chatId}`),
+      // app.channel(`users_${message.userId}`),
+      app.channel(`users_${currentChat.operatorId}`),
+      app.channel(`users_${currentChat.clientId}`),
+      app.channel('admins'),
+    ];
+  });
   app.service('chats').publish(async (chat: any) => [
     // app.channel(`chats_${chat._id}`),
     // app.channel(`operators_${chat.operatorId}`),
