@@ -29,7 +29,8 @@
     "dev": "ts-node-dev --no-notify src/",
     "start": "yarn run compile && node lib/",
     "jest": "jest  --forceExit",
-    "compile": "shx rm -rf lib/ && tsc"
+    "compile": "shx rm -rf lib/ && tsc",
+    "start:prod": "yarn run compile && NODE_ENV=production node lib/"
   },
   "standard": {
     "env": [
