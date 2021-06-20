@@ -9,6 +9,8 @@ export default function (options = {}): Hook {
       params: { files },
     } = context;
 
+    console.log('EPTAAAAAAAA', app.get('apiUrl'));
+
     if (!files || files.length === 0) {
       throw new BadRequest('No files found to upload');
     }
