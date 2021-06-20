@@ -14,9 +14,11 @@ export default function (options = {}): Hook {
     }
 
     const apiUrl = app.get('apiUrl');
+    console.log('adding image', apiUrl);
+
     context.data = files.map((f: any) => {
       const file = { ...f };
-      file.path = `${apiUrl}/uploads/${file.filename}`;
+      file.path = `${apiUrl}uploads/${file.filename}`;
       return file;
     });
 
