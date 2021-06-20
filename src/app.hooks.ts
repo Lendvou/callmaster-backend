@@ -1,3 +1,5 @@
+import Errors from '@feathersjs/errors';
+import { HookContext } from '@feathersjs/feathers';
 // Application hooks that run for every service
 // Don't remove this comment. It's needed to format import lines nicely.
 
@@ -23,7 +25,14 @@ export default {
   },
 
   error: {
-    all: [],
+    all: [
+      (ctx: HookContext): HookContext => {
+        if (ctx.error) {
+          console.log('HOOK ERROR', (ctx as any).code, ctx.error);
+        }
+        return ctx;
+      },
+    ],
     find: [],
     get: [],
     create: [],
