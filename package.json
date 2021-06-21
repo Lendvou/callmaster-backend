@@ -30,7 +30,8 @@
     "start": "yarn run compile && node lib/",
     "jest": "jest  --forceExit",
     "compile": "shx rm -rf lib/ && tsc",
-    "start:prod": "yarn run compile && NODE_ENV=production node lib/"
+    "start:prod": "yarn run compile && NODE_ENV=production node lib/",
+    "prod": "pm2 start ecosystem.config.js --env production"
   },
   "standard": {
     "env": [
