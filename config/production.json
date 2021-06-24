@@ -1,4 +1,5 @@
 {
-  "apiUrl": "http://3.123.129.35/api/",
+  "apiUrl": "http://http://54.93.241.153/api/",
+  "host": "callmaster-backend-app.feathersjs.com",
   "port": "3030"
 }
