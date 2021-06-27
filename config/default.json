@@ -2,7 +2,7 @@
   "host": "localhost",
   "port": 3030,
   "public": "../public/",
-  "apiUrl": "http://localhost:3030/",
+  "apiUrl": "http://http://3.67.189.159/api/",
   "paginate": {
     "default": 10,
     "max": 50
